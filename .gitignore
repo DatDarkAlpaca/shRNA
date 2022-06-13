@@ -6,6 +6,15 @@ __pycache__/
 # Idea files:
 .idea
 
+# Log files:
+*.log
+
+# Fasta files:
+*.fas
+
+# Executable Files:
+*.exe
+
 # C extensions
 *.so
 
@@ -59,7 +68,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
