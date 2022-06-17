@@ -1,13 +1,14 @@
-from src.gene_search import get_gene_name, GenePageSearch
-from src.GC.senso_target import SensoTargetScrapper
+from src.gene_search import get_gene_name, get_gene_symbol, GenePageSearch
+from src.si_rna import GenScriptScrapper
 from src.siDirect import SiDirectCrawler
-from src.results import ResultBuilder
+from src.nuccore import get_nuccore_name
 from src.driver import open_driver
 from src.RNAi import RNAiGenerator
 from src.muscle_rna import *
 from src.rna_utils import *
-from src.GC import *
+from src.GC import calculate_gc
 
+import pandas as pd
 import logging
 import os
 
@@ -32,31 +33,18 @@ def configure_logging(level=logging.INFO):
     return logger
 
 
-def main():
-    # Logger:
-    logger = configure_logging(logging.DEBUG)
+def retrieve_gene_results(driver, gene_id):
+    page_search = GenePageSearch(driver, gene_id)
+    gene_name = get_gene_name(page_search)
+    gene_symbol = get_gene_symbol(page_search)
 
-    # Input:
-    # gene_id = input("Enter the Gene's ID: ")
+    return gene_symbol, gene_name
 
-    # Driver:
-    logger.info('Initializing webdriver')
-    driver = open_driver()
 
-    # Gene Name:
-    # page_search = GenePageSearch(driver, gene_id)
-    # gene_name = get_gene_name(page_search)
-    # logger.info(f"Gene's Name: {gene_name.title()}")
-
-    # RNA Retrieval:
-    # logger.info('Retrieving RNA files')
-    # rna_file = get_rna_from_transcriptions(gene_id)
-    # rna_temp_file, rna_temp_filename = save_temp_rna_file(rna_file)
-
-    # Temporary RNA:
+def retrieve_consensus(logger, gene_id):
     logger.info('Retrieving RNA files')
-    rna_temp_filename = 'rna.fna'
-    rna_temp_file = open(rna_temp_filename)
+    rna_file = get_rna_from_transcriptions(gene_id)
+    rna_temp_file, rna_temp_filename = save_temp_rna_file(rna_file)
 
     # Muscle Setup:
     logger.info('Setting up Muscle')
@@ -67,52 +55,100 @@ def main():
     logger.info('Aligning RNA sequence')
     output_filepath = 'output.fas'
     aligned = align_rna(muscle_command, rna_temp_filename, output_filepath)
-    consensus = get_aligned_consensus(aligned)
 
-    # Get SiDirect sequences:
-    logger.info('Using siDirect crawler')
+    return output_filepath, get_aligned_consensus(aligned)
+
+
+def retrieve_target_and_tm(driver, consensus):
     si_crawler = SiDirectCrawler(driver)
     si_crawler.set_options(gc_range=(30, 50), custom_pattern='WWSNNNNNNNNNNNNNNNSNN')
     si_crawler.insert_sequence(consensus)
-    sequences, guides = si_crawler.get_si_direct_data()
 
-    # Generate RNAi sequences:
-    logging.info('Generating RNAi sequences')
-    rna_i_generator = RNAiGenerator(sequences)
+    target_sequences, tm_guides = si_crawler.get_si_direct_data()
+    return target_sequences, tm_guides
 
-    # Retrieving Final Results:
-    rna_i = rna_i_generator.rna_i
+
+def retrieve_variants_and_gene_name(gen_scrapper, sequence_list):
+    gen_bank_senso, senso_variant_gene_name = [], []
+    targets_in_h_sapien_senso = []
+
+    for senso in sequence_list:
+        result = gen_scrapper.get_si_rna_result_for_sequence(senso)
+        gen_bank_senso.append(result)
+        targets_in_h_sapien_senso.append(len(result))
+
+        nuccore_results = []
+        for nuccore_name in result:
+            nuccore_results.append(get_nuccore_name(nuccore_name))
+
+        senso_variant_gene_name.append(nuccore_results)
+        break   # Todo: IMPORTANT. Remove the break. It's meant for debugging.
+
+    return {'genbank': gen_bank_senso, 'gene_names': senso_variant_gene_name, 'amount': targets_in_h_sapien_senso}
+
+
+def main():
+    # Logger:
+    logger = configure_logging(logging.DEBUG)
+
+    # Input:
+    gene_id = input("Enter the Gene's ID: ")
+    n = input('Quantas sequência você quer testar? (-1 para testar todas): ')   # Todo: remove.
+
+    # Driver:
+    logger.info('Initializing webdriver')
+    driver = open_driver()
+
+    # Gene Results (First website that looks like an android app):
+    logger.info('Collecting gene results')
+    gene_symbol, gene_name = retrieve_gene_results(driver, gene_id)
+    logger.info(f"Gene's Name: {gene_name.title()} ({gene_symbol})")
+
+    # RNA Retrieval (Straight from a request):
+    output_filepath, consensus = retrieve_consensus(logger, gene_id)
+
+    # Get SiDirect sequences (Japanese Website):
+    logger.info('Using siDirect crawler')
+    target_sequences, tm_guides = retrieve_target_and_tm(driver, consensus)
+
+    # Generate RNAi/Guide/Tail/Gc sequences (uses the information from the jp website table):
+    logger.info('Generating RNAi sequences')
+    rna_i_generator = RNAiGenerator(target_sequences)
     senso_sequences = rna_i_generator.senso_sequences
-    gc_senso = fetch_gc_senso(senso_sequences)
-    guide_tail = rna_i_generator.guide_tail
-    gc_tail = fetch_gc_guide(guide_tail)
+    guide_sequences = rna_i_generator.guide_sequences
 
-    # Searching for targets:
-    # senso_target_scrapper = SensoTargetScrapper(driver)
-    # senso_targets = senso_target_scrapper.get_senso_targets(sequences)
+    # Initialize the GenScript Scrapper:
+    logger.info('Initializing the genscript scrapper')
+    gen_scrapper = GenScriptScrapper(driver)
 
-    # Add the results:
-    r = ResultBuilder()
-    r.add_result('shRNA', rna_i)
+    # Get Variants/GeneName:
+    senso_results = retrieve_variants_and_gene_name(gen_scrapper, senso_sequences)
+    guide_results = retrieve_variants_and_gene_name(gen_scrapper, guide_sequences)
 
-    r.add_result('Senso', senso_sequences)
-    r.add_result('GC', gc_senso)
+    # Final Results:
+    results = pd.DataFrame(list(zip(
+        senso_sequences,  # Alvo
+        senso_sequences,  # Senso
+        calculate_gc(senso_sequences),  # GC
+        senso_results['amount'],  # Alvos
+        senso_results['genbank'],  # Genbank
+        senso_results['gene_names'],  # Nome dos Genes
 
-    r.add_result('Guia', guide_tail)
-    r.add_result('GC', gc_tail)
+        guide_sequences,  # Guia
+        tm_guides,  # TM Guia
+        calculate_gc(guide_sequences),  # GC
+        guide_results['amount'],  # Alvos
+        guide_results['genbank'],  # Genbank
+        guide_results['gene_names'],  # Nome dos Genes
 
-    # r.add_result('Alvos em H. sapiens para a senso', alvos_senso)
-    # r.add_result('Descrição', TOTAL_ALVOS_SENSO)
-    # r.add_result('Alvos em H. sapiens para a guia', alvos_guia)
-    # r.add_result('Descrição', TOTAL_ALVOS_GUIA)
-    r.add_result('TM', guides)
+        rna_i_generator.rna_i  # shRNA
+    )), columns=['Alvo', 'Senso', 'GC', 'Alvos em H. sapiens para o senso', 'Genbank', 'Nome do Gene',
+                 'Guia', 'Tm Guia', 'GC', 'Alvos em H. sapiens para a guia', 'Genbank', 'Nome do Gene', 'shRNA'])
+
+    results.to_csv('Results.csv')
 
     # Cleanup:
     os.remove(output_filepath)
-    # os.close(rna_temp_file)
-
-    # Final results:
-    r.build_results('Resultados.csv')
 
 
 if __name__ == '__main__':

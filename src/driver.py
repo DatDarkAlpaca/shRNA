@@ -1,6 +1,8 @@
+import logging
+
 from webdriver_manager.chrome import ChromeDriverManager
 
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException
 from selenium.webdriver.remote.webdriver import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
@@ -31,4 +33,10 @@ def open_driver() -> webdriver.Chrome:
 
 
 def find_element_with_wait(driver, by: By, element: str, timeout: int = 10) -> WebElement:
-    return WebDriverWait(driver, timeout).until(lambda d: d.find_element(by, element))
+    try:
+        return WebDriverWait(driver, timeout).until(lambda d: d.find_element(by, element))
+    except TimeoutException:
+        logger = logging.getLogger('sh_rna')
+        logger.error(f"Failed to find_element_with_wait: {element}. Retrying")
+
+        find_element_with_wait(driver, by, element, timeout)

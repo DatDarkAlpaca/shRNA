@@ -23,22 +23,18 @@ class SiDirectCrawler(CustomDriver):
     # Methods:
     def set_options(self, gc_range: tuple, custom_pattern):
         find_element_with_wait(self.driver, By.XPATH, '/html/body/form/h3/font/a/img').click()
-        time.sleep(3)
         find_element_with_wait(self.driver, By.XPATH, '//*[@id="more1"]').click()
-        time.sleep(3)
 
         # Unchecking 'Ui-Tei et al., Nucleic Acids Res 32, 936-948':
         find_element_with_wait(self.driver, By.XPATH, '//*[@id="options"]/div[1]/table/tbody/tr/td[1]/p[2]/input')\
             .click()
-        time.sleep(3)
 
         # Checking 'Ui-Tei + Reynolds + Amarzguioui':
         find_element_with_wait(self.driver, By.XPATH, '//*[@id="functional_options"]/p[2]/input[3]').click()
-        time.sleep(3)
         # Setting 'Specificity Check' to 'none':
         select = Select(find_element_with_wait(self.driver, By.ID, 'nrdbSpe'))
         select.select_by_value('none')
-        time.sleep(3)
+
         # Set gc_content:
         find_element_with_wait(self.driver, By.XPATH, '//*[@id="options"]/div[4]/p[4]/input[1]').click()
 
@@ -46,21 +42,19 @@ class SiDirectCrawler(CustomDriver):
         gc_content_element.clear()
         gc_content_element.click()
         gc_content_element.send_keys(gc_range[0])
-        time.sleep(3)
+
         gc_content_element = find_element_with_wait(self.driver, By.XPATH, '//*[@id="options"]/div[4]/p[4]/input[3]')
         gc_content_element.clear()
 
         gc_content_element.click()
         gc_content_element.send_keys(gc_range[1])
-        time.sleep(3)
+
         # Set custom pattern:
         find_element_with_wait(self.driver, By.XPATH, '//*[@id="options"]/div[4]/p[5]/input[1]').click()
         custom_pattern_element = find_element_with_wait(self.driver, By.XPATH,
                                                         '//*[@id="options"]/div[4]/p[5]/input[2]')
         custom_pattern_element.clear()
         custom_pattern_element.send_keys(custom_pattern)
-
-        time.sleep(3)
 
     def insert_sequence(self, sequence: str):
         if self.sequence_input:

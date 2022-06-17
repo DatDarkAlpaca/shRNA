@@ -1,6 +1,7 @@
 from Bio.Seq import MutableSeq
 
 
+# Todo: rename to multi-result generator or something
 class RNAiGenerator:
     tail = 'TT'
     loop = 'TTCAAGAGA'
@@ -26,7 +27,8 @@ class RNAiGenerator:
         return self.sequence_results['senso']
 
     @property
-    def guide_tail(self):
+    # Todo: check whether the guide(guia) has the tail:
+    def guide_sequences(self):
         return self.sequence_results['with_tail']
 
     # Helpers:
