@@ -93,7 +93,6 @@ def main():
 
     # Input:
     gene_id = input("Enter the Gene's ID: ")
-    n = input('Quantas sequência você quer testar? (-1 para testar todas): ')   # Todo: remove.
 
     # Driver:
     logger.info('Initializing webdriver')
