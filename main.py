@@ -82,7 +82,6 @@ def retrieve_variants_and_gene_name(gen_scrapper, sequence_list):
             nuccore_results.append(get_nuccore_name(nuccore_name))
 
         senso_variant_gene_name.append(nuccore_results)
-        break   # Todo: IMPORTANT. Remove the break. It's meant for debugging.
 
     return {'genbank': gen_bank_senso, 'gene_names': senso_variant_gene_name, 'amount': targets_in_h_sapien_senso}
 
@@ -121,28 +120,30 @@ def main():
     gen_scrapper = GenScriptScrapper(driver)
 
     # Get Variants/GeneName:
-    senso_results = retrieve_variants_and_gene_name(gen_scrapper, senso_sequences)
-    guide_results = retrieve_variants_and_gene_name(gen_scrapper, guide_sequences)
+    senso_results = retrieve_variants_and_gene_name(gen_scrapper, senso_sequences[:2])
+    guide_results = retrieve_variants_and_gene_name(gen_scrapper, guide_sequences[:2])
 
     # Final Results:
     results = pd.DataFrame(list(zip(
-        senso_sequences,  # Alvo
-        senso_sequences,  # Senso
-        calculate_gc(senso_sequences),  # GC
+        senso_sequences[:2],  # Alvo
+        senso_sequences[:2],  # Senso
+        calculate_gc(senso_sequences[:2]),  # GC
         senso_results['amount'],  # Alvos
         senso_results['genbank'],  # Genbank
         senso_results['gene_names'],  # Nome dos Genes
 
-        guide_sequences,  # Guia
-        tm_guides,  # TM Guia
-        calculate_gc(guide_sequences),  # GC
+        guide_sequences[:2],  # Guia
+        tm_guides[:2],  # TM Guia
+        calculate_gc(guide_sequences[:2]),  # GC
         guide_results['amount'],  # Alvos
         guide_results['genbank'],  # Genbank
         guide_results['gene_names'],  # Nome dos Genes
 
-        rna_i_generator.rna_i  # shRNA
+        rna_i_generator.rna_i[:2]  # shRNA
     )), columns=['Alvo', 'Senso', 'GC', 'Alvos em H. sapiens para o senso', 'Genbank', 'Nome do Gene',
                  'Guia', 'Tm Guia', 'GC', 'Alvos em H. sapiens para a guia', 'Genbank', 'Nome do Gene', 'shRNA'])
+
+    print(results)
 
     results.to_csv('Results.csv')
 

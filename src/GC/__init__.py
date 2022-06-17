@@ -1,4 +1,4 @@
-def calculate_gc(sequences: list):
+def calculate_gc(sequences: list) -> list:
     results = []
 
     for senso in sequences:
