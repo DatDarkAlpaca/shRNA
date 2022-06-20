@@ -12,6 +12,8 @@ import pandas as pd
 import logging
 import os
 
+from tkinter import filedialog
+
 
 def configure_logging(level=logging.INFO):
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
@@ -59,6 +61,27 @@ def retrieve_consensus(logger, gene_id):
     return output_filepath, get_aligned_consensus(aligned)
 
 
+def retrieve_consensus_with_file(logger):
+    # Muscle Setup:
+    logger.info('Setting up Muscle')
+    download_muscle()
+    muscle_command = get_muscle_command()
+
+    # File:
+    fasta_file = filedialog.askopenfilename()
+
+    # Aligning RNA Sequence:
+    logger.info('Aligning RNA sequence')
+    output_filepath = 'output.fas'
+
+    if fasta_file:
+        aligned = align_rna(muscle_command, fasta_file, output_filepath)
+    else:
+        raise FileNotFoundError("No fasta file was provided.")
+
+    return output_filepath, get_aligned_consensus(aligned)
+
+
 def retrieve_target_and_tm(driver, consensus):
     si_crawler = SiDirectCrawler(driver)
     si_crawler.set_options(gc_range=(30, 50), custom_pattern='WWSNNNNNNNNNNNNNNNSNN')
@@ -86,7 +109,7 @@ def retrieve_variants_and_gene_name(gen_scrapper, sequence_list):
     return {'genbank': gen_bank_senso, 'gene_names': senso_variant_gene_name, 'amount': targets_in_h_sapien_senso}
 
 
-def main():
+def without_external():
     # Logger:
     logger = configure_logging(logging.DEBUG)
 
@@ -149,6 +172,72 @@ def main():
 
     # Cleanup:
     os.remove(output_filepath)
+
+
+def with_external():
+    # Logger:
+    logger = configure_logging(logging.DEBUG)
+
+    # Driver:
+    logger.info('Initializing webdriver')
+    driver = open_driver()
+
+    # File Retrieval:
+    consensus = retrieve_consensus_with_file(logger)
+
+    # Get SiDirect sequences (Japanese Website):
+    logger.info('Using siDirect crawler')
+    target_sequences, tm_guides = retrieve_target_and_tm(driver, consensus)
+
+    # Generate RNAi/Guide/Tail/Gc sequences (uses the information from the jp website table):
+    logger.info('Generating RNAi sequences')
+    rna_i_generator = RNAiGenerator(target_sequences)
+    senso_sequences = rna_i_generator.senso_sequences
+    guide_sequences = rna_i_generator.guide_sequences
+
+    # Initialize the GenScript Scrapper:
+    logger.info('Initializing the genscript scrapper')
+    gen_scrapper = GenScriptScrapper(driver)
+
+    # Get Variants/GeneName:
+    senso_results = retrieve_variants_and_gene_name(gen_scrapper, senso_sequences[:2])
+    guide_results = retrieve_variants_and_gene_name(gen_scrapper, guide_sequences[:2])
+
+    # Final Results:
+    results = pd.DataFrame(list(zip(
+        senso_sequences[:2],  # Alvo
+        senso_sequences[:2],  # Senso
+        calculate_gc(senso_sequences[:2]),  # GC
+        senso_results['amount'],  # Alvos
+        senso_results['genbank'],  # Genbank
+        senso_results['gene_names'],  # Nome dos Genes
+
+        guide_sequences[:2],  # Guia
+        tm_guides[:2],  # TM Guia
+        calculate_gc(guide_sequences[:2]),  # GC
+        guide_results['amount'],  # Alvos
+        guide_results['genbank'],  # Genbank
+        guide_results['gene_names'],  # Nome dos Genes
+
+        rna_i_generator.rna_i[:2]  # shRNA
+    )), columns=['Alvo', 'Senso', 'GC', 'Alvos em H. sapiens para o senso', 'Genbank', 'Nome do Gene',
+                 'Guia', 'Tm Guia', 'GC', 'Alvos em H. sapiens para a guia', 'Genbank', 'Nome do Gene', 'shRNA'])
+
+    print(results)
+
+    results.to_csv('Results.csv')
+
+    # Cleanup:
+    os.remove(output_filepath)
+
+
+def main():
+    file_option = input('Do you want to use an external .fas file? (y/n): ')
+    if file_option.lower() in ['y', 'yes', '1', 'true', 't', 'sim', 's']:
+        with_external()
+    else:
+        without_external()
+
 
 
 if __name__ == '__main__':
