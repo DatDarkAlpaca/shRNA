@@ -183,7 +183,7 @@ def with_external():
     driver = open_driver()
 
     # File Retrieval:
-    consensus = retrieve_consensus_with_file(logger)
+    output_filepath, consensus = retrieve_consensus_with_file(logger)
 
     # Get SiDirect sequences (Japanese Website):
     logger.info('Using siDirect crawler')
