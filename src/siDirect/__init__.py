@@ -1,20 +1,15 @@
-import logging
-import re
-import time
-
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
 
 from src.driver import *
+import re
 
 
-# Todo: rename to scrapper.
 # Todo: make siDirect refresh.
-class SiDirectCrawler(CustomDriver):
+class SiDirectScrapper(CustomDriver):
     def __init__(self, driver: webdriver.Chrome):
-        super(SiDirectCrawler, self).__init__(driver, 'http://sidirect2.rnai.jp')
+        super(SiDirectScrapper, self).__init__(driver, 'http://sidirect2.rnai.jp')
         self.logger = logging.getLogger('sh_rna')
 
         self.sequence_input = None

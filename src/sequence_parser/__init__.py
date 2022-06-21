@@ -2,7 +2,7 @@ from Bio.Seq import MutableSeq
 
 
 # Todo: rename to multi-result generator or something
-class RNAiGenerator:
+class SequenceParser:
     tail = 'TT'
     loop = 'TTCAAGAGA'
 
@@ -40,7 +40,7 @@ class RNAiGenerator:
     def _attach_loop(self):
         self.sequence_results['with_loop'] = []
         for senso in self.sequence_results['senso']:
-            self.sequence_results['with_loop'].append(senso + RNAiGenerator.loop)
+            self.sequence_results['with_loop'].append(senso + SequenceParser.loop)
 
     def _get_reverse_complement(self):
         self.sequence_results['reversed_complement'] = []
@@ -52,4 +52,4 @@ class RNAiGenerator:
     def _add_tail_to_reversed_complement(self):
         self.sequence_results['with_tail'] = []
         for sequence in self.sequence_results['reversed_complement']:
-            self.sequence_results['with_tail'].append(str(sequence) + RNAiGenerator.tail)
+            self.sequence_results['with_tail'].append(str(sequence) + SequenceParser.tail)

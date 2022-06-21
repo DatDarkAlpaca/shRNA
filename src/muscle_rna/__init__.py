@@ -36,11 +36,11 @@ def get_muscle_command():
     return os.path.join(os.path.curdir, 'muscle', f"muscle-{system.lower()}-x{bits}.exe")
 
 
-def align_rna(muscle_command: str, input_file: str, output_file: str = 'output.fas'):
+def align_rna(muscle_command: str, input_file: str, output_file: str):
     MuscleCommandline(muscle_command, input=input_file, out=output_file)()
     return AlignIO.read(output_file, 'fasta')
 
 
-def get_aligned_consensus(aligned):
+def get_aligned_consensus(aligned) -> str:
     summary = SummaryInfo(aligned)
     return str(summary.gap_consensus(threshold=1.0, ambiguous='X', require_multiple=0))

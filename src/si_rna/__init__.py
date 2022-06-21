@@ -1,11 +1,6 @@
-import time
-
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
-
+from selenium.common.exceptions import ElementClickInterceptedException
 from src.driver import *
-
-from dataclasses import dataclass, field
 import logging
 import re
 
@@ -15,11 +10,11 @@ class GenScriptScrapper(CustomDriver):
         super(GenScriptScrapper, self).__init__(driver, 'https://www.genscript.com/tools/sirna-target-finder')
         self.logger = logging.getLogger('sh_rna')
 
-    def get_si_rna_result_for_sequence(self, target_sequence) -> list:
+    def get_sequence_variants(self, sequence) -> list:
         # Send target sequence:
         sequence_input = find_element_with_wait(self.driver, By.XPATH, '//*[@id="sequence"]')
         sequence_input.clear()
-        sequence_input.send_keys(target_sequence)
+        sequence_input.send_keys(sequence)
 
         # Press the button:
         try:
@@ -32,12 +27,11 @@ class GenScriptScrapper(CustomDriver):
         # Variants (NM results):
         variants = self._wait_for_page_results()
         if not variants:
-            return self.get_si_rna_result_for_sequence(target_sequence)
+            return self.get_sequence_variants(sequence)
 
         self.go_back()
 
-        # Todo: Check whether there are other possibilities other than NM
-        return re.findall('\\w{2}_[\d]+', variants)
+        return re.findall('\w{2}_[\d]+', variants)
 
     def _wait_for_page_results(self):
         try:

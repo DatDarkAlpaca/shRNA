@@ -1,7 +1,2 @@
-def calculate_gc(sequences: list) -> list:
-    results = []
-
-    for senso in sequences:
-        results.append(((senso.count('G')) + (senso.count('C'))) / len(senso) * 100)
-
-    return results
+def calculate_gc(sequence: str) -> float:
+    return (sequence.count('G') + sequence.count('C')) / len(sequence) * 100

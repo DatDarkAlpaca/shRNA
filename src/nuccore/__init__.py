@@ -9,8 +9,6 @@ def get_nuccore_name(variant_string: str):
 
     result = tree.xpath('//*[@id="maincontent"]/div/div[5]/div[1]/h1')
     if len(result):
-        print(result[0].text)
         return result[0].text
     else:
-        print('None')
         return 'None'

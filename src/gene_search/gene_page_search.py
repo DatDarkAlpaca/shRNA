@@ -6,9 +6,9 @@ import logging
 
 
 # Todo: rename to scrapper.
-class GenePageSearch(CustomDriver):
+class NCBIGeneSearch(CustomDriver):
     def __init__(self, driver, gene_id: int):
-        super(GenePageSearch, self).__init__(driver, 'https://www.ncbi.nlm.nih.gov/datasets/tables/genes/')
+        super(NCBIGeneSearch, self).__init__(driver, 'https://www.ncbi.nlm.nih.gov/datasets/tables/genes/')
         self.logger = logging.getLogger('sh_rna')
         self.gene_id = gene_id
 
