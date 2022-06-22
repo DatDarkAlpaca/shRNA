@@ -1,5 +1,5 @@
-from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.webdriver.support import expected_conditions as ec
 from src.driver import *
 import logging
 import re
@@ -42,4 +42,3 @@ class GenScriptScrapper(CustomDriver):
         except TimeoutException:
             self.logger.error('The page took too long to load. Retrying.')
             return
-

@@ -1,14 +1,13 @@
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException
+from selenium.common import exceptions
 
 from src.driver import *
 import logging
 
 
-# Todo: rename to scrapper.
-class NCBIGeneSearch(CustomDriver):
+class NCBIGeneScrapper(CustomDriver):
     def __init__(self, driver, gene_id: int):
-        super(NCBIGeneSearch, self).__init__(driver, 'https://www.ncbi.nlm.nih.gov/datasets/tables/genes/')
+        super(NCBIGeneScrapper, self).__init__(driver, 'https://www.ncbi.nlm.nih.gov/datasets/tables/genes/')
         self.logger = logging.getLogger('sh_rna')
         self.gene_id = gene_id
 
@@ -34,6 +33,6 @@ class NCBIGeneSearch(CustomDriver):
                 ec.presence_of_element_located((By.CLASS_NAME, 'mdc-data-table__cell')))
 
             return self.driver.page_source.encode('utf-8')
-        except TimeoutException:
+        except exceptions.TimeoutException:
             self.logger.error('The page took too long to load. Retrying.')
             self._wait_for_page_source()

@@ -15,14 +15,14 @@ def download_muscle():
     if os.path.isfile(f"./muscle/muscle-{system.lower()}-x{bits}.exe"):
         return
 
-    url = None
+    url = 'https://drive5.com/muscle/downloads3.8.31/'
     match system:
         case 'Windows':
-            url = 'https://drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86win32.exe'
+            url += 'muscle3.8.31_i86win32.exe'
         case 'Linux':
-            url = f"https://drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux{bits}.tar.gz"
+            url += f"muscle3.8.31_i86linux{bits}.tar.gz"
         case 'Darwin':
-            url = f"https://drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86darwin{bits}.tar.gz"
+            url = f"muscle3.8.31_i86darwin{bits}.tar.gz"
 
     if url:
         with open(f"./muscle/muscle-{system.lower()}-x{bits}.exe", mode='wb') as file:

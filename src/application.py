@@ -1,14 +1,11 @@
-from src.gene_search import get_gene_name, get_gene_symbol, NCBIGeneSearch
+from src.gene_search import get_gene_name, get_gene_symbol, NCBIGeneScrapper
 from src.si_rna import GenScriptScrapper
 from src.siDirect import SiDirectScrapper
 from src.nuccore import get_nuccore_name
 from src.driver import open_driver
-from src.sequence_parser import SequenceParser
 from src.muscle_rna import *
 from src.rna_utils import *
-from src.GC import calculate_gc
 
-import pandas as pd
 import logging
 import os
 
@@ -20,7 +17,7 @@ from abc import ABC, abstractmethod
 def create_logger():
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 
-    file_handler = logging.FileHandler('log/debug.log')
+    file_handler = logging.FileHandler('../log/debug.log')
     file_handler.setFormatter(formatter)
 
     stream_handler = logging.StreamHandler()
@@ -109,7 +106,7 @@ class Application:
 
     # NCBI Gene:
     def get_ncbi_gene_information(self) -> NCBIGeneResult:
-        page_search = NCBIGeneSearch(self.driver, self.gene_id)
+        page_search = NCBIGeneScrapper(self.driver, self.gene_id)
         name = get_gene_name(page_search)
         symbol = get_gene_symbol(page_search)
 

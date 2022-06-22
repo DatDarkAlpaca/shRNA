@@ -1,7 +1,6 @@
 from Bio.Seq import MutableSeq
 
 
-# Todo: rename to multi-result generator or something
 class SequenceParser:
     tail = 'TT'
     loop = 'TTCAAGAGA'

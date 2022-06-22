@@ -1,6 +1,6 @@
 import pandas as pd
 
-from application import Application, RNADownloadFetcher, RNAExplorerFetcher
+from src.application import Application, RNADownloadFetcher, RNAExplorerFetcher
 from src.sequence_parser import SequenceParser
 from src.GC import calculate_gc
 
