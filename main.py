@@ -74,7 +74,9 @@ def main():
     consensus = app.get_muscle_consensus(fetcher)
 
     # SiDirect:
+    app.logger.info('Waiting siDirect to load')
     si_direct_results = app.get_si_direct_results(consensus)
+    app.clean_muscle_files()
 
     # Sequence Parser:
     app.logger.info('Parsing sequences')
@@ -83,9 +85,6 @@ def main():
     # Partial Result Generation:
     app.logger.info('Generating partial results')
     generate_results(app, si_direct_results, sequence_parser)
-
-    # Cleanup:
-    app.clean_muscle_files()
 
 
 if __name__ == '__main__':
