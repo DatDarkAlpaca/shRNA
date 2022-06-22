@@ -45,6 +45,7 @@ class NCBIGeneResult:
 
 @dataclass
 class SiDirectResult:
+    si_rna: field(default_factory=list)
     target_sequences: field(default_factory=list)
     tm_guides: field(default_factory=list)
 
@@ -142,8 +143,8 @@ class Application:
         self.si_crawler.set_options(gc_range=(30, 50), custom_pattern='WWSNNNNNNNNNNNNNNNSNN')
         self.si_crawler.insert_sequence(consensus)
 
-        target_sequences, tm_guides = self.si_crawler.get_si_direct_data()
-        return SiDirectResult(target_sequences, tm_guides)
+        si_rna, target_sequences, tm_guides = self.si_crawler.get_si_direct_data()
+        return SiDirectResult(si_rna, target_sequences, tm_guides)
 
     # GenScript:
     def get_genscript_results(self, sequence):

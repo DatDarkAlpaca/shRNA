@@ -1,3 +1,5 @@
+import sys
+
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
@@ -6,7 +8,6 @@ from src.driver import *
 import re
 
 
-# Todo: make siDirect refresh.
 class SiDirectScrapper(CustomDriver):
     def __init__(self, driver: webdriver.Chrome):
         super(SiDirectScrapper, self).__init__(driver, 'http://sidirect2.rnai.jp')
@@ -63,19 +64,21 @@ class SiDirectScrapper(CustomDriver):
         soup = BeautifulSoup(page, 'html.parser')
         table_body = soup.find('table').find('tbody')
 
-        sequences, guides = [], []
+        target_sequences, guides, si_rna = [], [], []
         rows = table_body.find_all('tr')
         for row in rows:
             cols = row.find_all('td')
             cols = [ele.text.strip() for ele in cols]
 
             for element in cols:
-                if re.search('\\b\w{23}\\b', element):
-                    sequences.append(element)
+                if re.search('\\b\w{42}\\b', element):
+                    si_rna.append(element)
+                elif re.search('\\b\w{23}\\b', element):
+                    target_sequences.append(element)
                 elif re.search('-?\d+.\d+ °C', element):
                     guides.append(element)
 
-        return sequences, guides
+        return si_rna, target_sequences, guides
 
     def _wait_for_page_results(self) -> str:
         try:
