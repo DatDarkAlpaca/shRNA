@@ -21,8 +21,8 @@ class GenScriptScrapper(CustomDriver):
             find_element_with_wait(self.driver, By.XPATH, '//*[@id="mainContent2"]/div/div/form/div[11]/input[1]') \
                 .click()
         except ElementClickInterceptedException:
-            find_element_with_wait(self.driver, By.XPATH, '//*[@id="adroll_allow_all"]/div') \
-                .click()
+            self.logger.info('Unable to press the submit button. Retrying')
+            self.driver.refresh()
 
         # Variants (NM results):
         variants = self._wait_for_page_results()
