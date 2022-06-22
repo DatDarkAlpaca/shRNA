@@ -70,7 +70,7 @@ class SiDirectScrapper(CustomDriver):
 
             for element in cols:
                 if re.search('\\b\w{42}\\b', element):
-                    si_rna.append(element)
+                    si_rna.append(element[:21] + ' ' + element[21:])
                 elif re.search('\\b\w{23}\\b', element):
                     target_sequences.append(element)
                 elif re.search('-?\d+.\d+ °C', element):
