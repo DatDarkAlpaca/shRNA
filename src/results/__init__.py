@@ -17,6 +17,7 @@ def generate_results(app, si_direct_results, sequence_parser):
     first_sequence = True
     target_amount = len(si_direct_results.target_sequences)
 
+    file_index = count_results()
     for i, sequence in enumerate(si_direct_results.target_sequences):
         si_rna_sequence = si_direct_results.si_rna[i]
         senso_sequence = sequence_parser.senso_sequences[i]
@@ -46,7 +47,7 @@ def generate_results(app, si_direct_results, sequence_parser):
             'shRNA': sequence_parser.rna_i[i]
         }
 
-        pd.DataFrame(data).to_csv(f"./results/Result{count_results()}.csv",
+        pd.DataFrame(data).to_csv(f"./results/Result{file_index}.csv",
                                   mode='a', encoding='utf-8', header=first_sequence, index=False)
         first_sequence = False
         app.logger.info(f"Progress: {i + 1}/{target_amount}")
