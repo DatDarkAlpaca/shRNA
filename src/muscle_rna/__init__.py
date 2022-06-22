@@ -12,6 +12,9 @@ def download_muscle():
     bits = struct.calcsize('P') * 8
     system = platform.system()
 
+    if not os.path.isdir('muscle'):
+        os.mkdir('muscle')
+
     if os.path.isfile(f"./muscle/muscle-{system.lower()}-x{bits}.exe"):
         return
 

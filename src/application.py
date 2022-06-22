@@ -17,6 +17,9 @@ from abc import ABC, abstractmethod
 def create_logger():
     formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 
+    if not os.path.isdir('log'):
+        os.mkdir('log')
+
     file_handler = logging.FileHandler('log/debug.log')
     file_handler.setFormatter(formatter)
 
