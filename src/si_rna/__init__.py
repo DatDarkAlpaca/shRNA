@@ -18,16 +18,15 @@ class GenScriptScrapper(CustomDriver):
 
         # Press the button:
         try:
-            find_element_with_wait(self.driver, By.XPATH, '//*[@id="mainContent2"]/div/div/form/div[11]/input[1]') \
-                .click()
+            element = find_element_with_wait(self.driver, By.XPATH,
+                                             '//*[@id="mainContent2"]/div/div/form/div[11]/input[1]')
+            self.driver.execute_script('arguments[0].click();', element)
         except ElementClickInterceptedException:
             self.logger.info('Unable to press the submit button. Retrying')
-            return self.driver.refresh()
+            self.get_sequence_variants(sequence)
 
         # Variants (NM results):
         variants = self._wait_for_page_results()
-        if not variants:
-            return self.get_sequence_variants(sequence)
 
         self.go_back()
 
@@ -41,4 +40,4 @@ class GenScriptScrapper(CustomDriver):
             return find_element_with_wait(self.driver, By.XPATH, '//*[@id="mainContent2"]/div/p[1]').text
         except TimeoutException:
             self.logger.error('The page took too long to load. Retrying.')
-            return
+            self._wait_for_page_results()
