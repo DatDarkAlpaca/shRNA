@@ -22,9 +22,7 @@ def get_fetcher():
             print('Please, use a valid identifier (\'1\' or \'2\')')
 
 
-def generate_results(app, si_direct_results):
-    sequence_parser = SequenceParser(si_direct_results.target_sequences)
-
+def generate_results(app, si_direct_results, sequence_parser):
     first_sequence = True
     target_amount = len(si_direct_results.target_sequences)
     for i, sequence in enumerate(si_direct_results.target_sequences):
@@ -78,9 +76,13 @@ def main():
     # SiDirect:
     si_direct_results = app.get_si_direct_results(consensus)
 
+    # Sequence Parser:
+    app.logger.info('Parsing sequences')
+    sequence_parser = SequenceParser(si_direct_results.target_sequences)
+
     # Partial Result Generation:
     app.logger.info('Generating partial results')
-    generate_results(app, si_direct_results)
+    generate_results(app, si_direct_results, sequence_parser)
 
     # Cleanup:
     app.clean_muscle_files()
