@@ -22,7 +22,7 @@ class GenScriptScrapper(CustomDriver):
                 .click()
         except ElementClickInterceptedException:
             self.logger.info('Unable to press the submit button. Retrying')
-            self.driver.refresh()
+            return self.driver.refresh()
 
         # Variants (NM results):
         variants = self._wait_for_page_results()
