@@ -27,7 +27,7 @@ class CustomDriver:
 
 def open_driver() -> webdriver.Chrome:
     options = webdriver.ChromeOptions()
-    options.headless = False
+    options.headless = True
 
     return webdriver.Chrome(options=options, service=Service(ChromeDriverManager().install()))
 

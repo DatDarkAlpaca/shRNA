@@ -13,12 +13,12 @@ def count_results() -> int:
     return len(fnmatch.filter(os.listdir('results'), '*.csv'))
 
 
-def generate_results(app, si_direct_results, sequence_parser):
+def generate_results(app, si_direct_results, sequence_parser, filename=None, start_at: int = 0):
     first_sequence = True
     target_amount = len(si_direct_results.target_sequences)
 
     file_index = count_results()
-    for i, sequence in enumerate(si_direct_results.target_sequences):
+    for i in range(start_at + 1, len(si_direct_results.target_sequences)):
         si_rna_sequence = si_direct_results.si_rna[i]
         senso_sequence = sequence_parser.senso_sequences[i]
         guide_sequence = sequence_parser.guide_sequences[i]
@@ -30,7 +30,7 @@ def generate_results(app, si_direct_results, sequence_parser):
 
         data = {
             'Index': [i],
-            'Alvo': [sequence],
+            'Alvo': [si_direct_results.target_sequences[i]],
             'siRNA': [si_rna_sequence],
             'Senso': [senso_sequence],
             'GC Senso': [str(calculate_gc(senso_sequence)) + '%'],
@@ -47,7 +47,12 @@ def generate_results(app, si_direct_results, sequence_parser):
             'shRNA': sequence_parser.rna_i[i]
         }
 
-        pd.DataFrame(data).to_csv(f"./results/Result{file_index}.csv",
-                                  mode='a', encoding='utf-8', header=first_sequence, index=False)
         first_sequence = False
-        app.logger.info(f"Progress: {i + 1}/{target_amount}")
+
+        if not filename:
+            pd.DataFrame(data).to_csv(f"./results/Result{file_index}.csv",
+                                      mode='a', encoding='utf-8', header=first_sequence, index=False)
+            app.logger.info(f"Progress: {i + 1}/{target_amount}")
+        else:
+            pd.DataFrame(data).to_csv(filename, mode='a', encoding='utf-8', header=first_sequence, index=False)
+            app.logger.info(f"Progress: {i}/{target_amount}")

@@ -1,6 +1,7 @@
 from src.application import Application, RNADownloadFetcher, RNAExplorerFetcher
 from src.sequence_parser import SequenceParser
 from src.results import generate_results, prepare_results
+from tkinter.filedialog import askopenfilename
 
 
 def get_fetcher():
@@ -23,6 +24,15 @@ def get_fetcher():
 def main():
     app = Application()
     app.initialize()
+
+    # Repair:
+    repair = input('Do you want to repair an existing result? (y/n): ')
+    if repair in ['y', 'yes', 's', 'sim', '1']:
+        start_at = int(input('What is the index of the last result you have fetched? (only numbers): '))
+        filename = askopenfilename()
+    else:
+        filename = None
+        start_at = 0
 
     # RNA Fetcher:
     fetcher = get_fetcher()
@@ -47,7 +57,7 @@ def main():
     # Partial Result Generation:
     app.logger.info('Generating partial results')
     prepare_results()
-    generate_results(app, si_direct_results, sequence_parser)
+    generate_results(app, si_direct_results, sequence_parser, filename, start_at)
 
 
 if __name__ == '__main__':
