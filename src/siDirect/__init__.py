@@ -64,6 +64,7 @@ class SiDirectScrapper(CustomDriver):
 
         target_sequences, guides, si_rna = [], [], []
         rows = table_body.find_all('tr')
+        i = 0
         for row in rows:
             cols = row.find_all('td')
             cols = [ele.text.strip() for ele in cols]
@@ -74,7 +75,9 @@ class SiDirectScrapper(CustomDriver):
                 elif re.search('\\b\w{23}\\b', element):
                     target_sequences.append(element)
                 elif re.search('-?\d+.\d+ °C', element):
-                    guides.append(element)
+                    if i % 2 == 0:
+                        guides.append(element)
+                    i += 1
 
         return si_rna, target_sequences, guides
 
