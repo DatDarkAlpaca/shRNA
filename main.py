@@ -8,7 +8,7 @@ def get_fetcher():
     print('\n')
 
     while True:
-        file_type = input('Do you want to enter the gene ID(1) or pass the RNA file(2)?: ')
+        file_type = input('Do you want to enter the gene ID(1), RNA file(2) or text input(3)?: ')
         if file_type.lower() in ['1', 'gene', 'id']:
             gene_id = input('Enter the gene ID: ')
 

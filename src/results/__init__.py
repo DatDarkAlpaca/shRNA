@@ -20,36 +20,35 @@ def generate_results(app, si_direct_results, sequence_parser, filename=None, sta
     if filename:
         start_at += 1
 
-
     first_sequence = not filename
 
     for i in range(start_at, len(si_direct_results.target_sequences)):
         si_rna_sequence = si_direct_results.si_rna[i]
-        senso_sequence = sequence_parser.senso_sequences[i]
-        guide_sequence = sequence_parser.guide_sequences[i]
+        passageira_sequence = sequence_parser.passageira_sequences[i]
+        guia_sequence = sequence_parser.guia_sequences[i]
 
         tm = str(si_direct_results.tm_guides[i])
 
-        senso_gen_result = app.get_genscript_results(senso_sequence)
-        guide_gen_result = app.get_genscript_results(guide_sequence)
+        senso_gen_result = app.get_genscript_results(passageira_sequence)
+        guide_gen_result = app.get_genscript_results(guia_sequence)
 
         data = {
             'Index': [i],
             'Alvo': [si_direct_results.target_sequences[i]],
             'siRNA': [si_rna_sequence],
-            'Senso': [senso_sequence],
-            'GC Senso': [str(calculate_gc(senso_sequence)) + '%'],
+            'Passageira': [passageira_sequence],
+            'GC Senso': [str(calculate_gc(passageira_sequence)) + '%'],
             'Alvos em H. sapiens para o senso': [senso_gen_result.amount],
             'Genbank Senso': [str(senso_gen_result.genbank)],
             'Nome dos Genes do Senso': [str(senso_gen_result.gene_names)],
 
-            'Guia': [guide_sequence],
+            'Guia': [guia_sequence],
             'Tm Guia': [tm],
-            'GC Guia': [str(calculate_gc(guide_sequence)) + '%'],
+            'GC Guia': [str(calculate_gc(guia_sequence)) + '%'],
             'Alvos em H. sapiens para a guia': [guide_gen_result.amount],
             'Genbank da Guia': [str(guide_gen_result.genbank)],
             'Nome dos Genes da Guia': [str(guide_gen_result.gene_names)],
-            'shRNA': sequence_parser.rna_i[i]
+            'shRNA': sequence_parser.sh_rna[i]
         }
 
         if not filename:

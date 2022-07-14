@@ -1,54 +1,54 @@
 from Bio.Seq import MutableSeq
+from Bio.Seq import reverse_complement
 
 
 class SequenceParser:
-    tail = 'TT'
-    loop = 'TTCAAGAGA'
+    loop = MutableSeq('UUCAAGAGA')
 
     def __init__(self, sequences: list):
         self.sequences = sequences
         self.sequence_results = {}
 
-        self._generate_senso()
-        self._attach_loop()
-        self._get_reverse_complement()
-        self._add_tail_to_reversed_complement()
+        self._generate_passageira()
+        self._generate_guia()
 
-    @property
-    def rna_i(self):
-        with_loop = self.sequence_results['with_loop']
-        with_tail = self.sequence_results['with_tail']
-
-        return [sequence[0] + sequence[1] for sequence in zip(with_loop, with_tail)]
-
-    @property
-    def senso_sequences(self):
-        return self.sequence_results['senso']
-
-    @property
-    # Todo: check whether the guide(guia) has the tail:
-    def guide_sequences(self):
-        return self.sequence_results['with_tail']
-
-    # Helpers:
-    def _generate_senso(self):
-        self.sequence_results['senso'] = []
+    def _generate_passageira(self):
+        self.sequence_results['passageira'] = []
         for sequence in self.sequences:
-            self.sequence_results['senso'].append(sequence[:-2])
+            passageira = list(sequence)
+            del passageira[:2]
+            del passageira[19:]
+            passageira = ''.join(passageira)
+            passageira = MutableSeq(passageira)
+            passageira = passageira.transcribe()
+            self.sequence_results['passageira'].append(passageira)
 
-    def _attach_loop(self):
-        self.sequence_results['with_loop'] = []
-        for senso in self.sequence_results['senso']:
-            self.sequence_results['with_loop'].append(senso + SequenceParser.loop)
+    def _generate_guia(self):
+        self.sequence_results['guia'] = []
+        for sequence in self.sequences:
+            guia = list(sequence)
+            del guia[21:]
+            guia = ''.join(guia)
+            guia = MutableSeq(guia)
+            guia = reverse_complement(guia)
+            guia = guia.transcribe()
+            self.sequence_results['guia'].append(guia)
 
-    def _get_reverse_complement(self):
-        self.sequence_results['reversed_complement'] = []
-        for sequence in self.sequence_results['senso']:
-            mutable_sequence = MutableSeq(sequence)
-            mutable_sequence.reverse_complement()
-            self.sequence_results['reversed_complement'].append(mutable_sequence)
+    @property
+    def passageira_sequences(self) -> list:
+        return self.sequence_results['passageira']
 
-    def _add_tail_to_reversed_complement(self):
-        self.sequence_results['with_tail'] = []
-        for sequence in self.sequence_results['reversed_complement']:
-            self.sequence_results['with_tail'].append(str(sequence) + SequenceParser.tail)
+    @property
+    def guia_sequences(self):
+        return self.sequence_results['guia']
+
+    @property
+    def sh_rna(self):
+        results = []
+        for i in range(self.sequences):
+            passageira = self.sequence_results['passageira'][i]
+            guia = self.sequence_results['guia'][i]
+
+            results.append(MutableSeq(passageira + SequenceParser.loop + guia))
+
+        return results
