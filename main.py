@@ -1,6 +1,6 @@
 from src.application import Application, RNADownloadFetcher, RNAExplorerFetcher
 from src.sequence_parser import SequenceParser
-from src.results import generate_results, prepare_results
+from src.results import generate_results, prepare_results_folder
 from tkinter.filedialog import askopenfilename
 
 
@@ -8,7 +8,7 @@ def get_fetcher():
     print('\n')
 
     while True:
-        file_type = input('Do you want to enter the gene ID(1), RNA file(2) or text input(3)?: ')
+        file_type = input('Do you want to enter the gene ID(1) or RNA file(2)?: ')
         if file_type.lower() in ['1', 'gene', 'id']:
             gene_id = input('Enter the gene ID: ')
 
@@ -56,7 +56,7 @@ def main():
 
     # Partial Result Generation:
     app.logger.info('Generating partial results')
-    prepare_results()
+    prepare_results_folder()
     generate_results(app, si_direct_results, sequence_parser, filename, start_at)
 
 

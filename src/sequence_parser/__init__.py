@@ -45,7 +45,7 @@ class SequenceParser:
     @property
     def sh_rna(self):
         results = []
-        for i in range(self.sequences):
+        for i in range(len(self.sequences)):
             passageira = self.sequence_results['passageira'][i]
             guia = self.sequence_results['guia'][i]
 

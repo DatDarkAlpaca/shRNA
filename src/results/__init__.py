@@ -4,7 +4,7 @@ import fnmatch
 import os
 
 
-def prepare_results():
+def prepare_results_folder():
     if not os.path.isdir('results'):
         os.mkdir('results')
 
