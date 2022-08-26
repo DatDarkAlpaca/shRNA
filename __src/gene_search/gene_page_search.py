@@ -1,7 +1,7 @@
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common import exceptions
 
-from src.driver import *
+from __src.driver import *
 import logging
 
 

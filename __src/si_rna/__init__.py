@@ -1,6 +1,6 @@
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.support import expected_conditions as ec
-from src.driver import *
+from __src.driver import *
 import logging
 import re
 

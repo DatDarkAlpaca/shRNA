@@ -1,10 +1,10 @@
-from src.gene_search import get_gene_name, get_gene_symbol, NCBIGeneScrapper
-from src.si_rna import GenScriptScrapper
-from src.siDirect import SiDirectScrapper
-from src.nuccore import get_nuccore_name
-from src.driver import open_driver
-from src.muscle_rna import *
-from src.rna_utils import *
+from __src.gene_search import get_gene_name, get_gene_symbol, NCBIGeneScrapper
+from __src.si_rna import GenScriptScrapper
+from __src.siDirect import SiDirectScrapper
+from __src.nuccore import get_nuccore_name
+from __src.driver import open_driver
+from __src.muscle_rna import *
+from __src.rna_utils import *
 
 import logging
 import os
@@ -95,7 +95,7 @@ class Application:
         self.genscript_scrapper = None
 
     def initialize(self):
-        # Initialize logger:
+        # Initialize log:
         self.logger = create_logger()
 
         # Initialize driver:

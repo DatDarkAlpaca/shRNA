@@ -1,4 +1,4 @@
-from src.GC import calculate_gc
+from __src.GC import calculate_gc
 import pandas as pd
 import fnmatch
 import os

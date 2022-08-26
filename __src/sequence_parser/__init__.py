@@ -13,7 +13,6 @@ class SequenceParser:
         self._generate_guia()
 
     def _generate_passageira(self):
-        # Todo: rewrite it for readability
         self.sequence_results['passageira'] = []
         for sequence in self.sequences:
             passageira = list(sequence)

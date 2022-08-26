@@ -1,0 +1,29 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    datefmt: "[%Y-%m-%d %H:%M:%S]"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: default
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.FileHandler
+    mode: w
+    level: DEBUG
+    formatter: default
+    filename: ./res/log/client.log
+
+loggers:
+  root:
+    level: INFO
+    handlers: [console, file]
+
+  WDM:
+    level: NOTSET
