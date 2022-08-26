@@ -10,6 +10,7 @@ from src.custom_driver import open_driver
 
 from typing import Optional
 from enum import Enum
+import zipfile
 
 from src.fetcher.muscle_fetcher import MuscleFetcher
 from src.genscript.scrapper import GenScriptScrapper
@@ -77,7 +78,11 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
         # 2.1. Muscle Input:
         self.main_logger.info('Obtaining RNA file')
         muscle_fetcher = MuscleFetcher(gene_id, self.input_file)
-        consensus = muscle_fetcher.fetch_results()
+        try:
+            consensus = muscle_fetcher.fetch_results()
+        except zipfile.BadZipFile:
+            return self.main_logger.error('This gene id has no zip file attached to it.')
+
 
         muscle_fetcher.clean_files()
 
