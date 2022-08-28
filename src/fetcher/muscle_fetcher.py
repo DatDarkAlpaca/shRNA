@@ -13,7 +13,8 @@ class MuscleFetcher(Fetcher):
         self.muscle_output_filepath = 'output.fas'
 
         self.muscle_command = None
-        self._initialize_muscle()
+
+        self.muscle_command = get_muscle_command()
 
     def fetch_results(self):
         """Fetches Muscle alignment consensus results."""
@@ -25,14 +26,6 @@ class MuscleFetcher(Fetcher):
 
     def clean_files(self):
         os.remove(self.muscle_output_filepath)
-
-    def _initialize_muscle(self):
-        self.logger.info('Downloading muscle')
-
-        download_muscle()
-        self.muscle_command = get_muscle_command()
-
-        self.logger.info('Finished downloading muscle')
 
     def _get_muscle_input(self):
         if not self.input_filepath:

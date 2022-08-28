@@ -74,9 +74,11 @@ class ShRNAResults:
             if not filename:
                 pd.DataFrame(data).to_csv(f"./results/Result{file_index}.csv",
                                           mode='a', encoding='utf-8', header=first_sequence, index=False)
-                self.logger.info(f"Progress: {i + 1}/{target_amount}")
+                # self.logger.info(f"Progress: {i + 1}/{target_amount}")
                 first_sequence = False
             else:
                 pd.DataFrame(data).to_csv(filename, mode='a', encoding='utf-8', header=first_sequence, index=False)
-                self.logger.info(f"Progress: {i}/{target_amount}")
+                # self.logger.info(f"Progress: {i}/{target_amount}")
                 first_sequence = False
+
+            yield i + 1, target_amount, data
