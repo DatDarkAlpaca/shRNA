@@ -300,21 +300,11 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
         row_position = self.results_table.rowCount()
         self.results_table.insertRow(row_position)
 
-        self.results_table.setItem(row_position, 0, QTableWidgetItem(str(data['Index'][0])))
-        self.results_table.setItem(row_position, 1, QTableWidgetItem(str(data['Alvo'][0])))
+        data_headers = ['Index', 'Alvo', 'siRNA', 'Passageira', 'GC Senso', 'Alvos em H. sapiens para o senso',
+                        'Genbank Senso', 'Nome dos Genes do Senso', 'Guia', 'Tm Guia', 'GC Guia',
+                        'Alvos em H. sapiens para a guia', 'Genbank da Guia', 'Nome dos Genes da Guia']
 
-        self.results_table.setItem(row_position, 2, QTableWidgetItem(str(data['siRNA'][0])))
-        self.results_table.setItem(row_position, 3, QTableWidgetItem(str(data['Passageira'][0])))
-        self.results_table.setItem(row_position, 4, QTableWidgetItem(str(data['GC Senso'][0])))
-        self.results_table.setItem(row_position, 5, QTableWidgetItem(str(data['Alvos em H. sapiens para o senso'][0])))
-        self.results_table.setItem(row_position, 6, QTableWidgetItem(str(data['Genbank Senso'][0])))
-        self.results_table.setItem(row_position, 7, QTableWidgetItem(str(data['Nome dos Genes do Senso'][0])))
+        for i, data_index in enumerate(data_headers):
+            self.results_table.setItem(row_position, i, QTableWidgetItem(str(data[data_index][0])))
 
-        self.results_table.setItem(row_position, 8, QTableWidgetItem(str(data['Guia'][0])))
-        self.results_table.setItem(row_position, 9, QTableWidgetItem(str(data['Tm Guia'][0])))
-        self.results_table.setItem(row_position, 10, QTableWidgetItem(str(data['GC Guia'][0])))
-        self.results_table.setItem(row_position, 11, QTableWidgetItem(str(data['Alvos em H. sapiens para a guia'][0])))
-
-        self.results_table.setItem(row_position, 12, QTableWidgetItem(str(data['Genbank da Guia'][0])))
-        self.results_table.setItem(row_position, 13, QTableWidgetItem(str(data['Nome dos Genes da Guia'][0])))
         self.results_table.setItem(row_position, 14, QTableWidgetItem(str(data['shRNA'])))
