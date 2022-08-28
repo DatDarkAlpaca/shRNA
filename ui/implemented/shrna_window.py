@@ -302,17 +302,19 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
 
         self.results_table.setItem(row_position, 0, QTableWidgetItem(str(data['Index'][0])))
         self.results_table.setItem(row_position, 1, QTableWidgetItem(str(data['Alvo'][0])))
+
         self.results_table.setItem(row_position, 2, QTableWidgetItem(str(data['siRNA'][0])))
         self.results_table.setItem(row_position, 3, QTableWidgetItem(str(data['Passageira'][0])))
         self.results_table.setItem(row_position, 4, QTableWidgetItem(str(data['GC Senso'][0])))
         self.results_table.setItem(row_position, 5, QTableWidgetItem(str(data['Alvos em H. sapiens para o senso'][0])))
         self.results_table.setItem(row_position, 6, QTableWidgetItem(str(data['Genbank Senso'][0])))
         self.results_table.setItem(row_position, 7, QTableWidgetItem(str(data['Nome dos Genes do Senso'][0])))
+
         self.results_table.setItem(row_position, 8, QTableWidgetItem(str(data['Guia'][0])))
         self.results_table.setItem(row_position, 9, QTableWidgetItem(str(data['Tm Guia'][0])))
         self.results_table.setItem(row_position, 10, QTableWidgetItem(str(data['GC Guia'][0])))
         self.results_table.setItem(row_position, 11, QTableWidgetItem(str(data['Alvos em H. sapiens para a guia'][0])))
+
         self.results_table.setItem(row_position, 12, QTableWidgetItem(str(data['Genbank da Guia'][0])))
-        self.results_table.setItem(row_position, 13, QTableWidgetItem(str(data['GC Guia'][0])))
-        self.results_table.setItem(row_position, 14, QTableWidgetItem(str(data['Nome dos Genes da Guia'][0])))
-        self.results_table.setItem(row_position, 15, QTableWidgetItem(str(data['shRNA'])))
+        self.results_table.setItem(row_position, 13, QTableWidgetItem(str(data['Nome dos Genes da Guia'][0])))
+        self.results_table.setItem(row_position, 14, QTableWidgetItem(str(data['shRNA'])))
