@@ -28,6 +28,12 @@
       </property>
       <item>
        <widget class="QLabel" name="input_label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Input:</string>
         </property>
@@ -79,18 +85,8 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -102,6 +98,12 @@
       </item>
       <item>
        <widget class="QLabel" name="debug_log_label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
          <string>Debug Log:</string>
         </property>
@@ -153,16 +155,126 @@
       </property>
       <item>
        <widget class="QLabel" name="results_label">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>Results:</string>
+         <string>Results</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="gene_id_label">
+        <property name="text">
+         <string>Gene ID:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="ncbi_result_label">
+        <property name="text">
+         <string>NCBI Information:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Results Table:</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QTableWidget" name="results_table">
+        <property name="sortingEnabled">
+         <bool>false</bool>
+        </property>
         <attribute name="horizontalHeaderStretchLastSection">
          <bool>true</bool>
         </attribute>
+        <column>
+         <property name="text">
+          <string>Index</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Alvo</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>siRNA</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Passageira</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Alvos em H. para Senso</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Genbank Senso</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Nome dos Genes do Senso</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Tm Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>GC Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Alvos em H. para Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Genbank Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Nomes dos Genes da Guia</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>shRNA</string>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>
