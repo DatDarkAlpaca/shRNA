@@ -43,8 +43,9 @@ class HTMLDelegate(QStyledItemDelegate):
 
 
 # Todo: move to a utils module.
-def colored(text: str, color: str) -> str:
-    return f"<span style=\"color:{color};\">{text}</span>"
+def colored(text: str, color: str, bold: bool = False) -> str:
+    bold = f"<strong>{text}</strong>" if bold else text
+    return f"<span style=\"color:{color};\">{bold}</span>"
 
 
 class QListLogger(logging.Handler):
@@ -71,8 +72,8 @@ class QListLogger(logging.Handler):
     @staticmethod
     def get_level_formatted(level: int) -> str:
         level_to_format = {
-            logging.CRITICAL: colored('CRITICAL', '#D82010'),
-            logging.ERROR: colored('ERROR', '#FF5E5E'),
+            logging.CRITICAL: colored('CRITICAL', '#D63033', True),
+            logging.ERROR: colored('ERROR', '#D63033'),
             logging.WARNING: colored('WARNING', '#FEFF69'),
             logging.INFO: colored('INFO', '#9C9B9B'),
             logging.DEBUG: colored('DEBUG', '#9C9B9B'),
