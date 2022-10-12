@@ -20,7 +20,13 @@ After that, you'll need to install the required libraries. To do so, run the fol
 pip install -r requirements.txt
 ```
 
-It is recommended that you create a virtual environment for the project.
+You can also use a virtual environment:
+
+```bash
+python3 -m venv venv
+call venv/Scripts/activate.bat
+pip install -r requirements.txt
+```
 
 ## License
 
