@@ -1,5 +1,7 @@
 from selenium.common.exceptions import ElementClickInterceptedException
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+
 from src.custom_driver import CustomDriver
 import logging
 import re
@@ -12,6 +14,8 @@ class GenScriptScrapper(CustomDriver):
 
     def get_sequence_variants(self, sequence) -> list:
         # Send target sequence:
+        self.wait_for_element_clickable(By.XPATH, '//*[@id="sequence"]')
+
         sequence_input = self.find_element_with_wait(By.XPATH, '//*[@id="sequence"]')
         sequence_input.clear()
         sequence_input.send_keys(sequence)

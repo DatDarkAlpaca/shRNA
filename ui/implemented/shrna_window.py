@@ -51,7 +51,7 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
     # Thread slots:
     def on_driver_ready(self, driver):
         self.driver = driver
-        self.main_logger.info('Successfully created a driver instance.')
+        self.main_logger.info('Webdriver ready')
 
     def on_ncbi_information_ready(self, information: NCBIInformation):
         self.ncbi_result_label.setText(f"NCBI Gene Information: Name: {information.name} | ({information.symbol})")
