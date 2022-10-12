@@ -1,129 +1,22 @@
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QTableWidgetItem
-from PySide6.QtCore import QFileInfo, QObject, Slot, Signal, QThread
-from selenium.webdriver.chromium.webdriver import ChromiumDriver
+from PySide6.QtCore import QFileInfo, QThread
 
 from ui.compiled.shrna_window import Ui_shRNAWindow
 
 from utils.logger.qlistlogger import QListLogger
 
-from src.ncbi_information import get_ncbi_gene_information
-from src.siDirect.scrapper import SiDirectScrapper
-from src.custom_driver import open_driver
-
 from typing import Optional
 from enum import Enum
-import zipfile
 
-from src.fetcher.muscle_fetcher import MuscleFetcher
 from src.genscript.scrapper import GenScriptScrapper
 from src.sequence_parser import SequenceParser
-from src.shrna_results import *
 
-from src.muscle import download_muscle
-
-from src.ncbi_information import NCBIInformation
-from src.siDirect import SiDirectResult
+from .workers import *
 
 
 class ErrorCode(Enum):
     valid = 0
     invalid = -1
-
-
-class DriverWorker(QObject):
-    ready = Signal(ChromiumDriver)
-    finished = Signal()
-
-    @Slot()
-    def initialize_driver(self):
-        driver = open_driver()
-        self.ready.emit(driver)
-        self.finished.emit()
-
-
-class NCBIWorker(QObject):
-    ready = Signal(NCBIInformation)
-    finished = Signal()
-
-    def __init__(self):
-        super().__init__()
-        self.driver = None
-        self.gene_id = None
-
-    @Slot()
-    def fetch_information(self):
-        information = get_ncbi_gene_information(self.driver, self.gene_id)
-        self.ready.emit(information)
-        self.finished.emit()
-
-
-class MuscleWorker(QObject):
-    muscle_downloaded = Signal()
-    finished = Signal(str)
-    error = Signal()
-
-    def __init__(self):
-        super().__init__()
-        self.gene_id = None
-        self.input_file = None
-
-    def download_muscle(self):
-        download_muscle()
-        self.muscle_downloaded.emit()
-
-    @Slot()
-    def run(self):
-        self.download_muscle()
-
-        muscle_fetcher = MuscleFetcher(self.gene_id, self.input_file)
-
-        try:
-            consensus = muscle_fetcher.fetch_results()
-            self.finished.emit(consensus)
-            muscle_fetcher.clean_files()
-        except zipfile.BadZipFile:
-            self.error.emit()
-
-
-class SiDirectWorker(QObject):
-    finished = Signal(SiDirectResult)
-
-    def __init__(self):
-        super().__init__()
-        self.consensus = None
-        self.driver = None
-
-    @Slot()
-    def run(self):
-        si_crawler = SiDirectScrapper(self.driver)
-        si_crawler.set_options(gc_range=(30, 50), custom_pattern='WWSNNNNNNNNNNNNNNNSNN')
-        si_crawler.insert_sequence(self.consensus)
-
-        si_direct_results = si_crawler.get_si_direct_data()
-        self.finished.emit(si_direct_results)
-
-
-class ResultsWorker(QObject):
-    finished = Signal()
-    result_ready = Signal(int, int, dict)
-
-    def __init__(self):
-        super().__init__()
-        self.genscript_scrapper = None
-        self.si_direct_results = None
-        self.sequence_parser = None
-
-    @Slot()
-    def run(self):
-        results = ShRNAResults()
-        generator = results.generate_results(self.genscript_scrapper,
-                                             self.si_direct_results,
-                                             self.sequence_parser, None, 0)
-
-        for current, amount, data in generator:
-            self.result_ready.emit(current, amount, data)
-
-        self.finished.emit()
 
 
 class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
@@ -198,12 +91,19 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
     # Initializers:
     def initialize_logger(self):
         self.logger_filepath = './res/client.log'
+
+        # Main loggers:
         self.main_logger = Logger('main-app')
+
+        loggers = [self.main_logger, Logger('muscle-fetcher'), Logger('genscript-scrapper'),
+                   Logger('ncbi-gene-scrapper'), Logger('si-direct-scrapper')]
 
         # Appending QLogger:
         q_logger = QListLogger()
         q_logger.set_widget(self.debug_log_list)
-        self.main_logger.logger.addHandler(q_logger)
+
+        for logger in loggers:
+            logger.logger.addHandler(q_logger)
 
     # noinspection PyUnresolvedReferences
     def initialize_threads(self):
@@ -277,8 +177,6 @@ class ShRNAWindow(QMainWindow, Ui_shRNAWindow):
         self.muscle_object.gene_id = gene_id
         self.muscle_object.input_file = self.input_file
         self.muscle_thread.start()
-
-        return
 
     # Input:
     def get_gene_id(self) -> Optional[int]:
