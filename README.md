@@ -1,4 +1,4 @@
-# shRNA
+# shRNA 2.0
 A repository made for analyzing and refactoring the shRNA code.
 
 ### Downloading
